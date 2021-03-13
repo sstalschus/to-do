@@ -1,26 +1,51 @@
 const express = require('express');
 const cors = require('cors');
 
-// const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// const users = [];
+const users = [];
 
 function checksExistsUserAccount(request, response, next) {
-  // Co
-  var a = 1
+  const { username } = request.headers
+
+  const user = users.find(user => 
+     user.username === username
+  )
+  if (!user) {
+    return response.status(400).json({ error: 'User not found' })
+  }
+
+  request.user = user
+
+  return next()
 }
 
 app.post('/users', (request, response) => {
-  // Complete aqui
+  const { name, username } = request.body
+
+    users.push({
+        id: uuidv4(),
+        name,
+        username,
+        todos: []
+    })
+
+    return response.status(201).json(users)
 });
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
-  // Complete aqui
+  const { user } = request
+
+  const userTodos = users.find(userArray => 
+    userArray.username === user.username
+  )
+
+  return response.json(userTodos.todos)
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
