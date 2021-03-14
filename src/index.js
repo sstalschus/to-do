@@ -9,10 +9,6 @@ app.use(express.json());
 
 const users = [];
 
-app.get('/todos1', (request, response) => {
-  response.send(users)
-})
-
 function checksExistsUserAccount(request, response, next) {
   const {username} = request.headers
 
@@ -96,7 +92,6 @@ app.patch('/todos/:id/done', (request, response) => {
     return response.status(404).json({error: 'Todo not found!'})
   }
   todo.done = true
-
 
   response.status(200).json(todo)
 })
