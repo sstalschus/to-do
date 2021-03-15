@@ -51,18 +51,17 @@ app.post('/users', (request, response) => {
     return response.status(400).json({error: 'User Already Exists'})
   }
 
-    users.push({
-        id: uuidv4(),
-        name,
-        username,
-        todos: []
-    })
+  const user = {
+    id: uuidv4(),
+    name,
+    username,
+    todos: []
+  }
+  users.push(user)
 
-    const user = users.find(user => 
-      user.username === username
-    )
-    return response.status(201).json(user)
+  return response.status(201).json(user)
 });
+
 
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   const { user } = request
@@ -71,20 +70,22 @@ app.get('/todos', checksExistsUserAccount, (request, response) => {
 });
 
 app.post('/todos', checksExistsUserAccount, (request, response) => {
-  const { user } = request
   const { title, deadline } = request.body
+  const { user } = request
 
-  const dateFormat = new Date(deadline + " 00:00")
+  const dateFormat = new Date(deadline)
 
-  user.todos.push({
+  const todo = {
     id: uuidv4(),
     title,
     done: false,
     deadline: dateFormat,
     created_at: new Date()
-  })
+  }
 
-  return response.status(201).send()
+  user.todos.push(todo)
+
+  response.status(201).send(todo)
 });
 
 app.put('/todos/:id', checksExistsUserAccount, checkExistsTodoId, (request, response) => {
@@ -92,9 +93,9 @@ app.put('/todos/:id', checksExistsUserAccount, checkExistsTodoId, (request, resp
   const { title, deadline } = request.body
 
   todo.title = title
-  todo.deadline = new Date(deadline + " 00:00")
+  todo.deadline = new Date(deadline)
 
-  return response.status(200).send()
+  return response.status(201).send(todo)
 
 });
 
@@ -103,7 +104,7 @@ app.patch('/todos/:id/done', checksExistsUserAccount, checkExistsTodoId, (reques
 
   todo.done = true
 
-  return response.status(200).send()
+  return response.status(200).send(todo)
 
 });
 
